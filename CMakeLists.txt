@@ -5,6 +5,4 @@ set(CMAKE_CXX_STANDARD 14)
 
 include_directories(.)
 
-add_executable(Lab3Sem3
-        graph.hpp
-        main.cpp)
+add_executable(Lab3Sem3 graph.hpp main.cpp)
