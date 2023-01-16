@@ -22,7 +22,7 @@ const char* ChangingTriangleMatrixMsg = "This won't be a triangle matrix";
 const char* NoSuchOptionFoundMsg = "No such option found. Try again";
 const char* WrongNumTypeMsg = "You entered number of the wrong type. Try again";
 
-class ErrorInfo : public std::exception {
+class ErrorInfo {
 private:
     int code;
     char message[100];
@@ -31,30 +31,29 @@ public:
         this->code = NoError;
     };
 
-    ErrorInfo(int errorCode, const char* s) {
-        this->code = errorCode;
-        for (int i = 0; i < strlen(s); ++i) {
-            this->message[i] = s[i];
+    ErrorInfo(const char* msg, int errType) {
+        for (int i = 0; i < strlen(msg); ++i) {
+            this->message[i] = msg[i];
         }
-        this->message[strlen(s)] = '\0';
+        this->code = errType;
     }
 public:
-    void copyErrorMsg(const char* s) {
+    void CopyErrorMsg(const char* s) {
         for (int i = 0; i < strlen(s); ++i) {
             this->message[i] = s[i];
         }
         this->message[strlen(s)] = '\0';
     }
 
-    int getErrorCode() const {
+    int GetErrorCode() const {
         return this->code;
     }
 
-    void setErrorCode(int errCode) {
+    void SetErrorCode(int errCode) {
         this->code = errCode;
     }
 
-    void getErrorMsg() const {
+    void GetErrorMsg() const {
         int i = 0;
         while (this->message[i]) {
             std :: cout << message[i];

@@ -224,6 +224,10 @@ class DynamicArray {
             this->capacity = count;
         }
 
+        DynamicArray(T item, int _size) {
+            
+        }
+
         DynamicArray(const DynamicArray<T>& dynamicArray) {
             auto* new_array = new T [dynamicArray.capacity];
             this->array = new_array;

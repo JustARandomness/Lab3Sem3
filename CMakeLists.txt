@@ -5,4 +5,4 @@ set(CMAKE_CXX_STANDARD 14)
 
 include_directories(.)
 
-add_executable(Lab3Sem3 graph.hpp main.cpp)
+add_executable(Lab3Sem3 main.cpp Graph.hpp ErrorInfo.hpp DynamicArray.hpp LinkedList.hpp ArraySequence.hpp ListSequence.hpp Sequence.hpp MapWhereReduce.hpp print.hpp SquareMatrix.hpp RectangleMatrix.hpp TriangleMatrix.hpp ComplexNumbers.hpp Options.hpp RandEnter.hpp)
