@@ -107,4 +107,16 @@ class ListSequence : public Sequence<T, Iterator> {
             }
             return newListSequence;
         }
+
+        T& operator[] (int index) {
+            return this->get(index);
+        }
+
+        friend std::ostream& operator<< (std::ostream& os, ListSequence listSequence) {
+            for (auto i = listSequence.begin(); i < listSequence.end(); ++i) {
+                std::cout << *i << " ";
+            }
+            std::cout << "\n";
+            return os;
+        }
 };

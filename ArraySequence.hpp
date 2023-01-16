@@ -12,6 +12,14 @@ class ArraySequence : public Sequence<T, Iterator> {
             this->items = dynamicArray;
         }
 
+        ArraySequence(T item, int count) {
+            this->items = new DynamicArray<T>(item, count);
+        }
+
+        ArraySequence (int count) {
+            this->items = new DynamicArray<T>(count);
+        }
+
         explicit ArraySequence() {
             auto *newArray = new DynamicArray<T>();
             this->items = newArray;
@@ -152,5 +160,13 @@ class ArraySequence : public Sequence<T, Iterator> {
 
         T& operator[] (int index) {
             return (*this->items)[index];
+        }
+
+        friend std::ostream& operator <<(std::ostream &os, ArraySequence arraySequence) {
+            for (auto i = arraySequence.begin(); i < arraySequence.end(); ++i) {
+                std::cout << *i << " ";
+            }
+            std::cout << "\n";
+            return os;
         }
 };

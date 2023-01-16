@@ -216,16 +216,24 @@ class DynamicArray {
             memcpy(this->array, items, sizeof(T) * count);
         }
 
-        DynamicArray() = default;
+        DynamicArray() {
+            this->array = new T [1];
+        }
 
-        explicit DynamicArray(int count, int _size = 0):size(_size) {
+        explicit DynamicArray(int count) {
+            if (count == 0)
+                count++;
             auto* newArray = new T [count];
             this->array = newArray;
             this->capacity = count;
+            this->size = 0;
         }
 
         DynamicArray(T item, int _size) {
-            
+            auto* newArray = new T [_size];
+            for (int i = 0; i < _size; ++i)
+                newArray[i] = item;
+            this->array = newArray;    
         }
 
         DynamicArray(const DynamicArray<T>& dynamicArray) {
@@ -235,6 +243,16 @@ class DynamicArray {
             this->capacity = dynamicArray.capacity;
             for (int i = 0; i < this->size; ++i) {
                 this->array[i] = dynamicArray.array[i];
+            }
+        }
+
+        DynamicArray(const DynamicArray<T>& dynamicArray, int firstIndex, int size) {
+            auto* new_array = new T [size];
+            this->array = new_array;
+            this->size = size;
+            this->capacity = size;
+            for (int i = firstIndex; i < firstIndex + size; ++i) {
+                this->array[i - firstIndex] = dynamicArray.array[i];
             }
         }
 
@@ -253,6 +271,7 @@ class DynamicArray {
 
             return this->array[index];
         }
+        
         int getSize() {
             return this->size;
         }
@@ -303,5 +322,13 @@ class DynamicArray {
     public:
         T& operator[] (int index) {
             return this->array[index];
+        }
+
+        friend std::ostream &operator<<(std::ostream &os, DynamicArray dynamicArray) {
+            for (int i = 0; i < dynamicArray.getSize(); ++i) {
+                std::cout << dynamicArray[i] << " ";
+            }
+            std::cout << "\n";
+            return os;
         }
 };

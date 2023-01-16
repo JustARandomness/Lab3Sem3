@@ -1,7 +1,7 @@
 #include <iostream>
 #include "ErrorInfo.hpp"
-#include "Sequence.hpp"
 #include "Iterators.hpp"
+#include "Sequence.hpp"
 #include "ArraySequence.hpp"
 #include "ListSequence.hpp"
 #include "MapWhereReduce.hpp"
@@ -18,6 +18,6 @@
 #include <vector>
 
 int main() {
-
+    
     return 0;
 }

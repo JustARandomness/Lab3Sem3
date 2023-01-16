@@ -2,3 +2,5 @@
 /.venv/
 /cmake-build-debug/
 /.vscode/
+/build/
+/main.exe

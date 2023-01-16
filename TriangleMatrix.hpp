@@ -5,7 +5,7 @@
 template <class T>
 class TriangleMatrix : public SquareMatrix<T> {
     public:
-        int GetTriangleMatrixElementCount(int item) {
+        int getTriangleMatrixElementCount(int item) {
             int result = 0;
             for (int i = item; i > 0; --i) {
                 result += i;
@@ -16,25 +16,25 @@ class TriangleMatrix : public SquareMatrix<T> {
         TriangleMatrix() = default;
 
         TriangleMatrix(T item, int count) {  // Заполняет все элементы, стоящие выше главной диагонали введенным числом
-            this->rectangleMatrix = new DynamicArray<T>(GetTriangleMatrixElementCount(count));
+            this->rectangleMatrix = new DynamicArray<T>(getTriangleMatrixElementCount(count));
             this->lines = count;
             this->columns = count;
             this->size = count;
-            for (int i = 0; i < GetTriangleMatrixElementCount(count); ++i) {
-                this->rectangleMatrix->Set(i, item);
+            for (int i = 0; i < getTriangleMatrixElementCount(count); ++i) {
+                this->rectangleMatrix->set(i, item);
             }
-            this->rectangleMatrix->SetSize(GetTriangleMatrixElementCount(count));
+            this->rectangleMatrix->setSize(getTriangleMatrixElementCount(count));
         }
 
         TriangleMatrix(T* items, int count) {
-            this->rectangleMatrix = new DynamicArray<T>(GetTriangleMatrixElementCount(count));
+            this->rectangleMatrix = new DynamicArray<T>(getTriangleMatrixElementCount(count));
             this->lines = count;
             this->columns = count;
             this->size = count;
             for (int i = 0; i < count * count - int((count * count - count) * 0.5); ++i) {
-                this->rectangleMatrix->Set(i, items[i]);
+                this->rectangleMatrix->set(i, items[i]);
             }
-            this->rectangleMatrix->SetSize(GetTriangleMatrixElementCount(count));
+            this->rectangleMatrix->setSize(getTriangleMatrixElementCount(count));
         }
 
         TriangleMatrix(const TriangleMatrix<T>& triangleMatrix) {
@@ -44,7 +44,7 @@ class TriangleMatrix : public SquareMatrix<T> {
             this->lines = this->size;
         }
     public:
-        T Get(int lineSerialNumber, int columnSerialNumber) const override {
+        T get(int lineSerialNumber, int columnSerialNumber) const override {
             if (lineSerialNumber > 1 && columnSerialNumber <= lineSerialNumber - 1) {
                 T item;
                 item = 0;
@@ -52,35 +52,32 @@ class TriangleMatrix : public SquareMatrix<T> {
             }
             else {
                 if (lineSerialNumber == this->size && columnSerialNumber == this->size) {
-                    return this->rectangleMatrix->Get(this->rectangleMatrix->GetSize() - 1);
+                    return this->rectangleMatrix->get(this->rectangleMatrix->getSize() - 1);
                 }
                 else {
-                    return this->rectangleMatrix->Get((lineSerialNumber - 1) * this->size + (columnSerialNumber - 1) - (lineSerialNumber - 1));
+                    return this->rectangleMatrix->get((lineSerialNumber - 1) * this->size + (columnSerialNumber - 1) - (lineSerialNumber - 1));
                 }
             }
         }
 
-        void Set(T item, int lineSerialNumber, int columnSerialNumber) override {
+        void set(T item, int lineSerialNumber, int columnSerialNumber) override {
             if (lineSerialNumber > 1 && columnSerialNumber <= lineSerialNumber - 1) {
-                ErrorInfo errorInfo;
-                errorInfo.SetErrorCode(ChangingTriangleMatrixCode);
-                errorInfo.CopyErrorMsg(ChangingTriangleMatrixMsg);
-                throw errorInfo;
+                throw ErrorInfo(ChangingTriangleMatrixCode, ChangingTriangleMatrixMsg);
             }
 
             if (lineSerialNumber == this->size && columnSerialNumber == this->size) {
-                this->rectangleMatrix->Set(this->rectangleMatrix->GetSize() - 1, item);
+                this->rectangleMatrix->set(this->rectangleMatrix->getSize() - 1, item);
             }
             else {
-                this->rectangleMatrix->Set((lineSerialNumber - 1) * this->size + (columnSerialNumber - 1) - (lineSerialNumber - 1), item);
+                this->rectangleMatrix->set((lineSerialNumber - 1) * this->size + (columnSerialNumber - 1) - (lineSerialNumber - 1), item);
             }
         }
 
         /*double EuclideanNorm() override {
             double sum = 0;
             double temp = 0;
-            for (int i = 0; i < this->rectangleMatrix->GetSize(); ++i) {
-                temp = this->rectangleMatrix->Get(i);
+            for (int i = 0; i < this->rectangleMatrix->getSize(); ++i) {
+                temp = this->rectangleMatrix->get(i);
                 temp = pow(temp, 2);
                 sum += temp;
             }
@@ -88,7 +85,7 @@ class TriangleMatrix : public SquareMatrix<T> {
             return sum;
         }*/
 
-        RectangleMatrix<T> GetLine(int lineSerialNumber) override {
+        RectangleMatrix<T> getLine(int lineSerialNumber) override {
             T* items = new T [this->columns];
             for (int i = 0; i < this->columns; ++i) {
                 if (i + 1 <= lineSerialNumber - 1) {
@@ -97,15 +94,15 @@ class TriangleMatrix : public SquareMatrix<T> {
                     items[i] = item;
                 }
                 else {
-                    items[i] = this->Get(lineSerialNumber, i + 1);
+                    items[i] = this->get(lineSerialNumber, i + 1);
                 }
             }
-            RectangleMatrix newRectangleMatrix(items, 1, this->columns);
+            RectangleMatrix<T> newRectangleMatrix(items, 1, this->columns);
             delete[] items;
             return newRectangleMatrix;
         }
 
-        RectangleMatrix<T> GetColumn(int columnSerialNumber) override {
+        RectangleMatrix<T> getColumn(int columnSerialNumber) override {
             T* items = new T [this->lines];
             for (int i = 0; i < this->lines; ++i) {
                 if (i >= columnSerialNumber) {
@@ -114,10 +111,10 @@ class TriangleMatrix : public SquareMatrix<T> {
                     items[i] = item;
                 }
                 else {
-                    items[i] = this->Get(i + 1, columnSerialNumber);
+                    items[i] = this->get(i + 1, columnSerialNumber);
                 }
             }
-            RectangleMatrix newRectangleMatrix(items, this->lines, 1);
+            RectangleMatrix<T> newRectangleMatrix(items, this->lines, 1);
             delete[] items;
             return newRectangleMatrix;
         }
@@ -128,8 +125,8 @@ class TriangleMatrix : public SquareMatrix<T> {
                     continue;
                 }
                 else {
-                    this->Set(this->Get(lineSerialNumber, j + 1) * number, lineSerialNumber, j + 1);
-                    std::cout << this->Get(lineSerialNumber, j + 1) << "\n";
+                    this->set(this->get(lineSerialNumber, j + 1) * number, lineSerialNumber, j + 1);
+                    std::cout << this->get(lineSerialNumber, j + 1) << "\n";
                 }
             }
         }
@@ -140,16 +137,16 @@ class TriangleMatrix : public SquareMatrix<T> {
                     continue;
                 }
                 else {
-                    this->Set(this->Get(i + 1, columnSerialNumber) * number, i + 1, columnSerialNumber);
+                    this->set(this->get(i + 1, columnSerialNumber) * number, i + 1, columnSerialNumber);
                 }
             }
         }
     public:
         TriangleMatrix operator+ (const TriangleMatrix B) {
             auto newTriangleMatrix (*this);
-            if (newTriangleMatrix.rectangleMatrix->GetSize() == B.rectangleMatrix->GetSize()) {
-                for (int i = 0; i < newTriangleMatrix.rectangleMatrix->GetSize(); ++i) {
-                    newTriangleMatrix.rectangleMatrix->Set(i, newTriangleMatrix.rectangleMatrix->Get(i) + B.rectangleMatrix->Get(i));
+            if (newTriangleMatrix.rectangleMatrix->getSize() == B.rectangleMatrix->getSize()) {
+                for (int i = 0; i < newTriangleMatrix.rectangleMatrix->getSize(); ++i) {
+                    newTriangleMatrix.rectangleMatrix->set(i, newTriangleMatrix.rectangleMatrix->get(i) + B.rectangleMatrix->get(i));
                 }
             }
             return newTriangleMatrix;
@@ -157,9 +154,9 @@ class TriangleMatrix : public SquareMatrix<T> {
 
     TriangleMatrix operator- (const TriangleMatrix B) {
         auto newTriangleMatrix = new TriangleMatrix(*this);
-        if (newTriangleMatrix.rectangleMatrix->GetSize() == B.rectangleMatrix->GetSize()) {
-            for (int i = 0; i < newTriangleMatrix.rectangleMatrix->GetSize(); ++i) {
-                newTriangleMatrix.rectangleMatrix->Set(i, newTriangleMatrix.rectangleMatrix->Get(i) - B.rectangleMatrix->Get(i));
+        if (newTriangleMatrix.rectangleMatrix->getSize() == B.rectangleMatrix->getSize()) {
+            for (int i = 0; i < newTriangleMatrix.rectangleMatrix->getSize(); ++i) {
+                newTriangleMatrix.rectangleMatrix->set(i, newTriangleMatrix.rectangleMatrix->get(i) - B.rectangleMatrix->get(i));
             }
         }
         return newTriangleMatrix;
@@ -174,7 +171,7 @@ class TriangleMatrix : public SquareMatrix<T> {
     friend std :: ostream& operator<< (std :: ostream& os, TriangleMatrix triangleMatrix) {
         for (int i = 0; i < triangleMatrix.lines; ++i) {
             for (int j = 0; j < triangleMatrix.columns; ++j) {
-                std :: cout << std :: setprecision(3) << triangleMatrix.Get(i + 1, j + 1) << " ";
+                std :: cout << std :: setprecision(3) << triangleMatrix.get(i + 1, j + 1) << " ";
             }
             std :: cout << "\n";
         }

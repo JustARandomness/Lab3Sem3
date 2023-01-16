@@ -31,7 +31,7 @@ public:
         this->code = NoError;
     };
 
-    ErrorInfo(const char* msg, int errType) {
+    ErrorInfo(int errType, const char* msg) {
         for (int i = 0; i < strlen(msg); ++i) {
             this->message[i] = msg[i];
         }

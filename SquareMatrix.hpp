@@ -17,9 +17,9 @@ class SquareMatrix : public RectangleMatrix<T>{
             this->size = count;
             this->rectangleMatrix = new DynamicArray<T>(count * count);
             for (int i = 0; i < count * count; ++i) {
-                this->rectangleMatrix->Set(i, item);
+                this->rectangleMatrix->set(i, item);
             }
-            this->rectangleMatrix->SetSize(count * count);
+            this->rectangleMatrix->setSize(count * count);
         }
 
         SquareMatrix(T* items, int count) {
@@ -27,7 +27,7 @@ class SquareMatrix : public RectangleMatrix<T>{
             this->columns = count;;
             this->rectangleMatrix = new DynamicArray<T>(items, count * count);
             for (int i = 0; i < count * count; ++i) {
-                this->rectangleMatrix->Set(i, items[i]);
+                this->rectangleMatrix->set(i, items[i]);
             }
         }
 
@@ -38,7 +38,7 @@ class SquareMatrix : public RectangleMatrix<T>{
             this->rectangleMatrix = new DynamicArray<T>(*matrix.rectangleMatrix);
         }
     public:
-        int GetSize() {
+        int getSize() {
             return this->size;
         }
     public:
@@ -47,16 +47,13 @@ class SquareMatrix : public RectangleMatrix<T>{
                 SquareMatrix<T> resultMatrix(*this);
                 for (int i = 0; i < resultMatrix.size; ++i) {
                     for (int j = 0; j < resultMatrix.size; ++j) {
-                        resultMatrix.Set(i + 1, j + 1, this->Get(i + 1, j + 1) + B.Get(i + 1, j + 1));
+                        resultMatrix.set(i + 1, j + 1, this->get(i + 1, j + 1) + B.get(i + 1, j + 1));
                     }
                 }
                 return resultMatrix;
             }
             else {
-                ErrorInfo errorInfo;
-                errorInfo.SetErrorCode(DifferentSizedMatricesCode);
-                errorInfo.CopyErrorMsg(DifferentSizedMatricesMsg);
-                throw errorInfo;
+                throw ErrorInfo(DifferentSizedMatricesCode, DifferentSizedMatricesMsg);
             }
         };
 
@@ -65,16 +62,13 @@ class SquareMatrix : public RectangleMatrix<T>{
                 SquareMatrix<T> resultMatrix(*this);
                 for (int i = 0; i < resultMatrix.size; ++i) {
                     for (int j = 0; j < resultMatrix.size; ++j) {
-                        resultMatrix.Set(i + 1, j + 1, this->Get(i + 1, j + 1) - B.Get(i + 1, j + 1));
+                        resultMatrix.set(i + 1, j + 1, this->get(i + 1, j + 1) - B.get(i + 1, j + 1));
                     }
                 }
                 return resultMatrix;
             }
             else {
-                ErrorInfo errorInfo;
-                errorInfo.SetErrorCode(DifferentSizedMatricesCode);
-                errorInfo.CopyErrorMsg(DifferentSizedMatricesMsg);
-                throw errorInfo;
+                throw ErrorInfo(DifferentSizedMatricesCode, DifferentSizedMatricesMsg);
             }
         };
 
@@ -84,17 +78,14 @@ class SquareMatrix : public RectangleMatrix<T>{
                 for (int i = 0; i < resultMatrix.size; ++i) {
                     for (int j = 0; j < resultMatrix.size; ++j) {
                         for (int l = 0; l < this->size; ++l) {
-                            resultMatrix.Set(i + 1, j + 1, resultMatrix.Get(i + 1, j + 1) + (B.Get(l + 1, j + 1) * this->Get(i + 1, l + 1)));
+                            resultMatrix.set(i + 1, j + 1, resultMatrix.get(i + 1, j + 1) + (B.get(l + 1, j + 1) * this->get(i + 1, l + 1)));
                         }
                     }
                 }
                 return resultMatrix;
             }
             else {
-                ErrorInfo errorInfo;
-                errorInfo.SetErrorCode(DifferentSizedMatricesCode);
-                errorInfo.CopyErrorMsg(DifferentSizedMatricesMsg);
-                throw errorInfo;
+                throw ErrorInfo(DifferentSizedMatricesCode, DifferentSizedMatricesMsg);
             }
         };
 
@@ -102,7 +93,7 @@ class SquareMatrix : public RectangleMatrix<T>{
             if (this->lines == B.lines) {
                 for (int i = 0; i < this->lines; ++i) {
                     for (int j = 0; j < this->columns; ++j) {
-                        this->Set(B.Get(i + 1, j + 1), i + 1, j + 1);
+                        this->set(B.get(i + 1, j + 1), i + 1, j + 1);
                     }
                 }
             }
@@ -116,28 +107,25 @@ class SquareMatrix : public RectangleMatrix<T>{
         };
 
         SquareMatrix<T>& operator= (RectangleMatrix<T> B) {
-            if (B.isSquareMatrix() && this->lines == B.GetLinesCount()) {
+            if (B.isSquareMatrix() && this->lines == B.getLinesCount()) {
                 for (int i = 0; i < this->lines; ++i) {
                     for (int j = 0; j < this->columns; ++j) {
-                        this->Set(B.Get(i + 1, j + 1), i + 1, j + 1);
+                        this->set(B.get(i + 1, j + 1), i + 1, j + 1);
                     }
                 }
                 return *this;
             }
             else if (!B.isSquareMatrix()) {
-                ErrorInfo errorInfo;
-                errorInfo.SetErrorCode(NotSquareMatrixCode);
-                errorInfo.CopyErrorMsg(NotSquareMatrixMsg);
-                throw errorInfo;
+                throw ErrorInfo(NotSquareMatrixCode, NotSquareMatrixMsg);
             }
-            else if (B.isSquareMatrix() && this->lines != B.GetLinesCount()) {
+            else if (B.isSquareMatrix() && this->lines != B.getLinesCount()) {
                 delete this->rectangleMatrix;
-                this->rectangleMatrix = new DynamicArray<T>(B.GetArrayCopy(), B.GetLinesCount() * B.GetColumnsCount());
-                this->lines = B.GetLinesCount();
-                this->columns = B.GetColumnsCount();
+                this->rectangleMatrix = new DynamicArray<T>(B.getArrayCopy(), B.getLinesCount() * B.getColumnsCount());
+                this->lines = B.getLinesCount();
+                this->columns = B.getColumnsCount();
                 for (int i = 0; i < this->lines; ++i) {
                     for (int j = 0; j < this->columns; ++j) {
-                        this->Set(B.Get(i + 1, j + 1), i + 1, j + 1);
+                        this->set(B.get(i + 1, j + 1), i + 1, j + 1);
                     }
                 }
                 return *this;
@@ -147,7 +135,7 @@ class SquareMatrix : public RectangleMatrix<T>{
         friend std :: ostream& operator<< (std :: ostream& os, SquareMatrix squareMatrix) {
             for (int i = 0; i < squareMatrix.lines; ++i) {
                 for (int j = 0; j < squareMatrix.columns; ++j) {
-                    std :: cout << std :: setprecision(3) << squareMatrix.Get(i + 1, j + 1) << " ";
+                    std :: cout << std :: setprecision(3) << squareMatrix.get(i + 1, j + 1) << " ";
                 }
                 std :: cout << "\n";
             }
