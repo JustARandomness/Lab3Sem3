@@ -19,7 +19,7 @@
 
 int main() {
     auto* graph = CreateTestGraph();
-    std::cout << (*graph);
+    std::cout << (*graph->getPath(2, 5)) << "\n";
     delete graph;
     return 0;
 }

@@ -8,6 +8,18 @@ class RectangleMatrix {
         DynamicArray<T>* rectangleMatrix;
         size_t lines = 0;
         size_t columns = 0;
+
+        struct access {
+            DynamicArray<T>* data;
+            size_t i;
+            size_t columns;
+
+            access(DynamicArray<T>* _data, size_t _i, size_t _columns) : data(_data), i(_i), columns(_columns) {}
+
+            T& operator[](size_t j){
+                return (*this->data)[i * columns + j];
+            }
+        };
     public:
         RectangleMatrix() = default;
 
@@ -49,7 +61,7 @@ class RectangleMatrix {
             return this->lines;
         }
 
-        virtual T get(int lineSerialNumber, int columnSerialNumber) const {
+        virtual const T& get(int lineSerialNumber, int columnSerialNumber) const {
             return this->rectangleMatrix->get((lineSerialNumber - 1) * this->columns + (columnSerialNumber - 1));
         }
 
@@ -212,6 +224,10 @@ class RectangleMatrix {
                 }
             }
             return result;
+        }
+
+        access operator[](int i) {
+            return access(this->rectangleMatrix, i, this->columns);
         }
 
         friend std::ostream &operator<<(std::ostream &os, RectangleMatrix rectangleMatrix1) {

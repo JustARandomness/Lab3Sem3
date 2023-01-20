@@ -1,3 +1,5 @@
+int max = 100000000;
+
 template<class T>
 class Graph {
     private:
@@ -33,7 +35,34 @@ class Graph {
             stack->prepend(v + 1);    
         }
 
-        
+        ArraySequence<T>* dijkstra(int v, ArraySequence<int>& parent) {
+            auto* distance = new ArraySequence<T>(max, this->getSize());
+            ArraySequence<bool> visited(false, this->getSize());
+            (*distance)[v - 1] = 0;
+            for (int i = 0; i < this->getSize(); ++i) {
+                int s = -1;
+                for (int j = 0; j < this->getSize(); ++j) {
+                    if (!visited[j] && (s == -1 || (*distance)[j] < (*distance)[s])) {
+                        s = j;
+                    }
+                }
+                if ((*distance)[s] == max) {
+                    break;
+                }
+                visited[s] = true;
+                for (int j = 0; j < this->getSize(); ++j) {
+                    if (this->adjMatrix->get(s + 1, j + 1) != 0) {
+                        int to = j;
+                        int len = this->adjMatrix->get(s + 1, j + 1);
+                        if ((*distance)[s] + len < (*distance)[to]) {
+                            (*distance)[to] = (*distance)[s] + len;
+                            parent[to] = s;
+                        }
+                    }
+                }
+            }
+            return distance;
+        }
     public:
         Graph(int num_of_columns = 6) {
             this->adjMatrix = new SquareMatrix<T>(num_of_columns);
@@ -78,6 +107,23 @@ class Graph {
             return false;
         }
 
+        ArraySequence<int>* getPath(int v1, int v2) {
+            ArraySequence<int> parent(-1, this->getSize());
+            auto* path = new ArraySequence<int>(0);
+            auto* distance = dijkstra(v1, parent);
+            if ((*distance)[v2 - 1] != max) {
+                for (int v = v2 - 1; v != v1 - 1; v = parent[v]) {
+                    path->prepend(v + 1);
+                }
+                path->prepend(v1);
+                return path;
+            }
+            delete distance;
+            delete path;
+            std::cout << "No path found\n";
+            return nullptr;
+        }
+
         ArraySequence<T>* topologicalSort() {
             if (!this->isCyclic()) {
                 auto* visited = new ArraySequence<bool>(false, this->getSize());
@@ -90,7 +136,6 @@ class Graph {
                 return stack;
             }
             return nullptr;
-                    
         }
 
         friend std::ostream& operator<<(std::ostream& os, Graph<T> g) {

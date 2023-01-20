@@ -218,6 +218,7 @@ class DynamicArray {
 
         DynamicArray() {
             this->array = new T [1];
+            this->capacity = 1;
         }
 
         explicit DynamicArray(int count) {
@@ -262,7 +263,7 @@ class DynamicArray {
             delete [] this->array;
         }
     public:
-        const T& get(int index) {
+        const T& get(int index) const{
             if (!this->array) {
                 throw ErrorInfo(NoArrayCreatedCode, NoArrayCreatedMsg);
             }
