@@ -9,7 +9,6 @@
 #include <iomanip>
 #include "RectangleMatrix.hpp"
 #include "SquareMatrix.hpp"
-#include "TriangleMatrix.hpp"
 #include "ComplexNumbers.hpp"
 #include "Options.hpp"
 #include "RandEnter.hpp"
@@ -18,8 +17,7 @@
 #include <vector>
 
 int main() {
-    auto* graph = CreateTestGraph();
-    std::cout << (*graph->getPath(2, 5)) << "\n";
-    delete graph;
+    auto graph = CreateTestGraph();
+    std::cout << graph.fordBellman(1) << '\n';
     return 0;
 }

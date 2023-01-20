@@ -47,7 +47,7 @@ class SquareMatrix : public RectangleMatrix<T>{
                 SquareMatrix<T> resultMatrix(*this);
                 for (int i = 0; i < resultMatrix.size; ++i) {
                     for (int j = 0; j < resultMatrix.size; ++j) {
-                        resultMatrix.set(i + 1, j + 1, this->get(i + 1, j + 1) + B.get(i + 1, j + 1));
+                        resultMatrix.set(i, j, this->get(i, j) + B.get(i, j));
                     }
                 }
                 return resultMatrix;
@@ -62,7 +62,7 @@ class SquareMatrix : public RectangleMatrix<T>{
                 SquareMatrix<T> resultMatrix(*this);
                 for (int i = 0; i < resultMatrix.size; ++i) {
                     for (int j = 0; j < resultMatrix.size; ++j) {
-                        resultMatrix.set(i + 1, j + 1, this->get(i + 1, j + 1) - B.get(i + 1, j + 1));
+                        resultMatrix.set(i, j, this->get(i, j) - B.get(i, j));
                     }
                 }
                 return resultMatrix;
@@ -78,7 +78,7 @@ class SquareMatrix : public RectangleMatrix<T>{
                 for (int i = 0; i < resultMatrix.size; ++i) {
                     for (int j = 0; j < resultMatrix.size; ++j) {
                         for (int l = 0; l < this->size; ++l) {
-                            resultMatrix.set(i + 1, j + 1, resultMatrix.get(i + 1, j + 1) + (B.get(l + 1, j + 1) * this->get(i + 1, l + 1)));
+                            resultMatrix.set(i, j, resultMatrix.get(i, j) + (B.get(l, j) * this->get(i, l)));
                         }
                     }
                 }
@@ -93,7 +93,7 @@ class SquareMatrix : public RectangleMatrix<T>{
             if (this->lines == B.lines) {
                 for (int i = 0; i < this->lines; ++i) {
                     for (int j = 0; j < this->columns; ++j) {
-                        this->set(B.get(i + 1, j + 1), i + 1, j + 1);
+                        this->set(B.get(i, j), i, j);
                     }
                 }
             }
@@ -113,7 +113,7 @@ class SquareMatrix : public RectangleMatrix<T>{
             else if (B.isSquareMatrix() && this->lines == B.getLinesCount()) {
                 for (int i = 0; i < this->lines; ++i) {
                     for (int j = 0; j < this->columns; ++j) {
-                        this->set(B.get(i + 1, j + 1), i + 1, j + 1);
+                        this->set(B.get(i, j), i, j);
                     }
                 }
                 return *this;
@@ -125,7 +125,7 @@ class SquareMatrix : public RectangleMatrix<T>{
                 this->columns = B.getColumnsCount();
                 for (int i = 0; i < this->lines; ++i) {
                     for (int j = 0; j < this->columns; ++j) {
-                        this->set(B.get(i + 1, j + 1), i + 1, j + 1);
+                        this->set(B.get(i, j), i, j);
                     }
                 }
                 return *this;
@@ -135,7 +135,7 @@ class SquareMatrix : public RectangleMatrix<T>{
         friend std :: ostream& operator<< (std :: ostream& os, SquareMatrix squareMatrix) {
             for (int i = 0; i < squareMatrix.lines; ++i) {
                 for (int j = 0; j < squareMatrix.columns; ++j) {
-                    std :: cout << std :: setprecision(3) << squareMatrix.get(i + 1, j + 1) << " ";
+                    std :: cout << std :: setprecision(3) << squareMatrix.get(i, j) << " ";
                 }
                 std :: cout << "\n";
             }

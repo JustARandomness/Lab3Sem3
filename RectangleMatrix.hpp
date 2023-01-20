@@ -61,8 +61,8 @@ class RectangleMatrix {
             return this->lines;
         }
 
-        virtual const T& get(int lineSerialNumber, int columnSerialNumber) const {
-            return this->rectangleMatrix->get((lineSerialNumber - 1) * this->columns + (columnSerialNumber - 1));
+        virtual const T& get(int line, int column) const {
+            return this->rectangleMatrix->get(line * this->columns + column);
         }
 
         T* getArrayCopy() const {
@@ -73,20 +73,20 @@ class RectangleMatrix {
             return items;
         }
 
-        virtual RectangleMatrix getLine(int lineSerialNumber) {
+        virtual RectangleMatrix getLine(int line) {
             T *items = new T[this->columns];
             for (int i = 0; i < this->columns; ++i) {
-                items[i] = this->get(lineSerialNumber, i + 1);
+                items[i] = this->get(line, i);
             }
             RectangleMatrix newRectangleMatrix(items, 1, this->columns);
             delete[] items;
             return newRectangleMatrix;
         }
 
-        virtual RectangleMatrix getColumn(int columnSerialNumber) {
+        virtual RectangleMatrix getColumn(int column) {
             T *items = new T[this->lines];
             for (int i = 0; i < this->lines; ++i) {
-                items[i] = this->get(i + 1, columnSerialNumber);
+                items[i] = this->get(i, column);
             }
             RectangleMatrix newRectangleMatrix(items, this->lines, 1);
             delete[] items;
@@ -94,75 +94,42 @@ class RectangleMatrix {
         }
 
     public:
-        virtual void set(T item, int lineSerialNumber, int columnSerialNumber) {
-            this->rectangleMatrix->set((lineSerialNumber - 1) * this->columns + (columnSerialNumber - 1), item);
+        virtual void set(T item, int line, int column) {
+            this->rectangleMatrix->set(line * this->columns + column, item);
         }
 
-        /*virtual double EuclideanNorm() {
-            if (sizeof(T) != sizeof(ComplexNumber<int>) && sizeof(T) != sizeof(ComplexNumber<int>) {
-                double sum = 0;
-                double temp = 0;
-                for (int i = 0; i < this->lines; ++i) {
-                    for (int j = 0; j < this->columns; ++j) {
-                        temp = this->get(i + 1, j + 1);
-                        temp = pow(temp, 2);
-                        sum += temp;
-                    }
-                }
-                sum = pow(sum, 0.5);
-                return sum;
-            }
-            else if (sizeof(T) == sizeof(ComplexNumber<double>) && sizeof(T) != sizeof(ComplexNumber<int>) {
-                ComplexNumber<double> sum = 0;
-                ComplexNumber<double> temp = 0;
-                for (int i = 0; i < this->lines; ++i) {
-                    for (int j = 0; j < this->columns; ++j) {
-                        temp = this->get(i + 1, j + 1);
-                        temp = temp.Power(2);
-                        sum += temp;
-                    }
-                }
-                sum = pow(sum, 0.5);
-                return sum;
-            }
-        }*/
-
-        virtual void multiplyLineByNumber(int lineSerialNumber, T number) {
+        virtual void multiplyLineByNumber(int line, T number) {
             for (int j = 0; j < this->columns; ++j) {
-                this->rectangleMatrix->set((lineSerialNumber - 1) * this->columns + j, this->get(lineSerialNumber, j + 1) * number);
+                this->rectangleMatrix->set(line * this->columns + j, this->get(line, j) * number);
             }
         }
 
-        virtual void multiplyColumnByNumber(int columnSerialNumber, T number) {
+        virtual void multiplyColumnByNumber(int column, T number) {
             for (int i = 0; i < this->lines; ++i) {
-                this->rectangleMatrix->set(i * this->columns + (columnSerialNumber - 1), this->get(i + 1, columnSerialNumber) * number);
+                this->rectangleMatrix->set(i * this->columns + column, this->get(i, column) * number);
             }
         }
 
-        void swapColumns(int firstColumnSerialNumber, int secondColumnSerialNumber) {
+        void swapColumns(int firstColumn, int secondColumn) {
             T temp;
             for (int i = 0; i < this->lines; ++i) {
-                temp = this->get(i + 1, firstColumnSerialNumber);
-                this->set(this->get(i + 1, secondColumnSerialNumber), i + 1, firstColumnSerialNumber);
-                this->set(temp, i + 1, firstColumnSerialNumber);
+                temp = this->get(i, firstColumn);
+                this->set(this->get(i, secondColumn), i, firstColumn);
+                this->set(temp, i, firstColumn);
             }
         }
 
-        void swapLines(int firstLineSerialNumber, int secondLineSerialNumber) {
+        void swapLines(int firstLine, int secondLine) {
             T temp;
             for (int j = 0; j < this->columns; ++j) {
-                temp = this->get(firstLineSerialNumber, j + 1);
-                this->set(this->get(secondLineSerialNumber, j + 1), firstLineSerialNumber, j + 1);
-                this->set(temp, secondLineSerialNumber, j + 1);
+                temp = this->get(firstLine, j);
+                this->set(this->get(secondLine, j), firstLine, j);
+                this->set(temp, secondLine, j);
             }
         }
 
         bool isSquareMatrix() {
-            if (this->lines == this->columns) {
-                return true;
-            } else {
-                return false;
-            }
+            return this->lines == this->columns;
         }
 
     public:
@@ -170,7 +137,7 @@ class RectangleMatrix {
             RectangleMatrix result(*this);
             for (int i = 0; i < this->lines; ++i) {
                 for (int j = 0; j < this->columns; ++j) {
-                    result.set(i + 1, j + 1, result.Get(i + 1, j + 1) + B.Get(i + 1, j + 1));
+                    result.set(i, j, result.get(i, j) + B.get(i, j));
                 }
             }
             return result;
@@ -180,7 +147,7 @@ class RectangleMatrix {
             RectangleMatrix result(*this);
             for (int i = 0; i < this->lines; ++i) {
                 for (int j = 0; j < this->columns; ++j) {
-                    result.set(i + 1, j + 1, result.Get(i + 1, j + 1) - B.Get(i + 1, j + 1));
+                    result.set(i, j, result.get(i, j) - B.get(i, j));
                 }
             }
             return result;
@@ -193,7 +160,7 @@ class RectangleMatrix {
             this->rectangleMatrix = new DynamicArray<T>(*B.rectangleMatrix);
             for (int i = 0; i < this->lines; ++i) {
                 for (int j = 0; j < this->columns; ++j) {
-                    this->set(B.get(i + 1, j + 1), i + 1, j + 1);
+                    this->set(B.get(i, j), i, j);
                 }
             }
             return *this;
@@ -205,8 +172,8 @@ class RectangleMatrix {
                 for (int i = 0; i < result.lines; ++i) {
                     for (int j = 0; j < result.columns; ++j) {
                         for (int l = 0; l < this->columns; ++l) {
-                            result.Set(i + 1, j + 1,
-                                       result.Get(i + 1, j + 1) + (B.Get(l + 1, j + 1) * this->get(i + 1, l + 1)));
+                            result.set(i, j,
+                                       result.get(i, j) + (B.get(l, j) * this->get(i, l)));
                         }
                     }
                 }
@@ -220,7 +187,7 @@ class RectangleMatrix {
             RectangleMatrix result(*this);
             for (int i = 0; i < this->lines; ++i) {
                 for (int j = 0; j < this->columns; ++j) {
-                    result.Set(i + 1, j + 1, result.Get(i + 1, j + 1) * item);
+                    result.set(i, j, result.get(i, j) * item);
                 }
             }
             return result;
@@ -233,7 +200,7 @@ class RectangleMatrix {
         friend std::ostream &operator<<(std::ostream &os, RectangleMatrix rectangleMatrix1) {
             for (int i = 0; i < rectangleMatrix1.lines; ++i) {
                 for (int j = 0; j < rectangleMatrix1.columns; ++j) {
-                    os << std::setprecision(3) << rectangleMatrix1.get(i + 1, j + 1) << " ";
+                    os << std::setprecision(3) << rectangleMatrix1.get(i, j) << " ";
                 }
                 os << "\n";
             }

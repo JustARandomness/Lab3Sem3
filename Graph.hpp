@@ -1,4 +1,4 @@
-int max = 100000000;
+int max = 1000000000;
 
 template<class T>
 class Graph {
@@ -15,7 +15,7 @@ class Graph {
             int size = this->getSize();
             for (int i = 0; i < size; ++i) 
             {
-                if (i != v && this->adjMatrix->get(v + 1, i + 1) != 0) {
+                if (i != v && this->adjMatrix->get(v, i) != 0) {
                     if (isCyclic(i, colour)) {
                         return true;
                     }
@@ -29,8 +29,9 @@ class Graph {
             (*visited)[v] = true;
             int size = this->getSize();
             for (int i = 0; i < size; ++i) {
-                if (!(*visited)[i] && this->adjMatrix->get(v + 1, i + 1) != 0)
+                if (!(*visited)[i] && this->adjMatrix->get(v, i) != 0) {
                     dfs(i, visited, stack);
+                }
             }
             stack->prepend(v + 1);    
         }
@@ -38,7 +39,7 @@ class Graph {
         ArraySequence<T>* dijkstra(int v, ArraySequence<int>& parent) {
             auto* distance = new ArraySequence<T>(max, this->getSize());
             ArraySequence<bool> visited(false, this->getSize());
-            (*distance)[v - 1] = 0;
+            (*distance)[v] = 0;
             for (int i = 0; i < this->getSize(); ++i) {
                 int s = -1;
                 for (int j = 0; j < this->getSize(); ++j) {
@@ -51,9 +52,9 @@ class Graph {
                 }
                 visited[s] = true;
                 for (int j = 0; j < this->getSize(); ++j) {
-                    if (this->adjMatrix->get(s + 1, j + 1) != 0) {
+                    if (this->adjMatrix->get(s, j) != 0) {
                         int to = j;
-                        int len = this->adjMatrix->get(s + 1, j + 1);
+                        int len = this->adjMatrix->get(s, j);
                         if ((*distance)[s] + len < (*distance)[to]) {
                             (*distance)[to] = (*distance)[s] + len;
                             parent[to] = s;
@@ -111,9 +112,9 @@ class Graph {
             ArraySequence<int> parent(-1, this->getSize());
             auto* path = new ArraySequence<int>(0);
             auto* distance = dijkstra(v1, parent);
-            if ((*distance)[v2 - 1] != max) {
-                for (int v = v2 - 1; v != v1 - 1; v = parent[v]) {
-                    path->prepend(v + 1);
+            if ((*distance)[v2] != max) {
+                for (int v = v2; v != v1; v = parent[v]) {
+                    path->prepend(v);
                 }
                 path->prepend(v1);
                 return path;
@@ -122,6 +123,53 @@ class Graph {
             delete path;
             std::cout << "No path found\n";
             return nullptr;
+        }
+
+        ArraySequence<T> fordBellman (int v) {
+            ArraySequence<T> distance(max, this->getSize());
+            distance[v] = 0;
+            for (int k = 0; k < this->getSize(); ++k){
+                for (int i = 0; i < this->getSize(); ++i) {
+                    bool anyChange = false;
+                    for (int j = 0; j < this->getSize(); ++j) {
+                        if ((*this->adjMatrix)[i][j] != 0) {
+                            if (distance[i] < max) {
+                                if (distance[j] > distance[i] + (*this->adjMatrix)[i][j]) {
+                                    distance[j] = distance[i] + (*this->adjMatrix)[i][j];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            for (int i = 0 ; i <this->getSize(); ++i) {
+                distance[i] = (distance[i] == max) ? -1 : distance[i];
+            }
+            return distance;
+        }
+
+        SquareMatrix<T> floyd() {
+            SquareMatrix<T> distance(*(this->adjMatrix));
+            for (int i = 0; i < this->getSize(); ++i) {
+                for (int j = 0; j < this->getSize(); ++j) {
+                    if (i != j) {
+                        distance[i][j] = (distance[i][j] == 0) ? max : distance[i][j];
+                    }
+                }
+            }
+            for (int k = 0; k < this->getSize(); ++k) {
+                for (int i = 0; i < this->getSize(); ++i) {
+                    for (int j = 0; j < this->getSize(); ++j) {
+                        distance[i][j] = std::min(distance[i][j], distance[i][k] + distance[k][j]);
+                    }
+                }
+            }
+            for (int i = 0; i < this->getSize(); ++i) {
+                for (int j = 0; j < this->getSize(); ++j) {
+                    distance[i][j] = (distance[i][j] == max) ? 0 : distance[i][j];
+                }
+            }
+            return distance;
         }
 
         ArraySequence<T>* topologicalSort() {
@@ -138,13 +186,13 @@ class Graph {
             return nullptr;
         }
 
-        friend std::ostream& operator<<(std::ostream& os, Graph<T> g) {
+        friend std::ostream& operator<<(std::ostream& os, Graph<T>& g) {
             int size = g.getSize();
             for (int i = 0; i < size; ++i) {
-                os << i + 1 << " : { ";
+                os << i << " : { ";
                 for (int j = 0; j < size; ++j) {
-                    if (g.adjMatrix->get(i + 1, j + 1) != 0)
-                        os << j + 1 << ' ';
+                    if (g.adjMatrix->get(i, j) != 0)
+                        os << j << ' ';
                 }
                 os << "};\n";
             }
@@ -154,17 +202,17 @@ class Graph {
 
 
 
-Graph<int>* CreateTestGraph() {
-    auto* graph = new Graph<int>(6);
-    graph->changeEgde(3, 1, 5);
-    graph->changeEgde(2, 2, 1);
-    graph->changeEgde(8, 3, 1);
-    graph->changeEgde(6, 3, 2);
-    graph->changeEgde(5, 4, 2);
-    graph->changeEgde(3, 6, 2);
-    graph->changeEgde(4, 3, 4);
-    graph->changeEgde(9, 3, 5);
-    graph->changeEgde(2, 4, 6);
-    graph->changeEgde(1, 6, 5);
+Graph<int> CreateTestGraph() {
+    auto graph = Graph<int>(6);
+    graph.changeEgde(3, 0, 4);
+    graph.changeEgde(2, 1, 0);
+    graph.changeEgde(8, 2, 0);
+    graph.changeEgde(6, 2, 1);
+    graph.changeEgde(5, 3, 1);
+    graph.changeEgde(3, 5, 1);
+    graph.changeEgde(4, 2, 3);
+    graph.changeEgde(9, 2, 4);
+    graph.changeEgde(2, 3, 5);
+    graph.changeEgde(1, 5, 4);
     return graph;
 };
