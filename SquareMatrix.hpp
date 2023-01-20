@@ -107,7 +107,10 @@ class SquareMatrix : public RectangleMatrix<T>{
         };
 
         SquareMatrix<T>& operator= (RectangleMatrix<T> B) {
-            if (B.isSquareMatrix() && this->lines == B.getLinesCount()) {
+            if (!B.isSquareMatrix()) {
+                throw ErrorInfo(NotSquareMatrixCode, NotSquareMatrixMsg);
+            }
+            else if (B.isSquareMatrix() && this->lines == B.getLinesCount()) {
                 for (int i = 0; i < this->lines; ++i) {
                     for (int j = 0; j < this->columns; ++j) {
                         this->set(B.get(i + 1, j + 1), i + 1, j + 1);
@@ -115,10 +118,7 @@ class SquareMatrix : public RectangleMatrix<T>{
                 }
                 return *this;
             }
-            else if (!B.isSquareMatrix()) {
-                throw ErrorInfo(NotSquareMatrixCode, NotSquareMatrixMsg);
-            }
-            else if (B.isSquareMatrix() && this->lines != B.getLinesCount()) {
+            else {
                 delete this->rectangleMatrix;
                 this->rectangleMatrix = new DynamicArray<T>(B.getArrayCopy(), B.getLinesCount() * B.getColumnsCount());
                 this->lines = B.getLinesCount();

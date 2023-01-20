@@ -231,6 +231,8 @@ class DynamicArray {
 
         DynamicArray(T item, int _size) {
             auto* newArray = new T [_size];
+            this->size = _size;
+            this->capacity = _size;
             for (int i = 0; i < _size; ++i)
                 newArray[i] = item;
             this->array = newArray;    
@@ -290,6 +292,23 @@ class DynamicArray {
             }
 
             this->array[index] = value;
+        }
+
+        DynamicArray* getSubArray(int startIndex, int endIndex) {
+            bool reversed = false;
+            if (endIndex - startIndex < 0) {
+                std::swap(endIndex, startIndex);
+                reversed = true;
+            }
+            DynamicArray* newArray = new DynamicArray(endIndex - startIndex + 1);
+            if (reversed) {
+                for (int i = 0; i < this->size; ++i)
+                    newArray->array[i] = this->array[this->size - i - 1];
+                return newArray;
+            }
+            for (int i = 0; i < this->size; ++i)
+                    newArray->array[i] = this->array[i];
+            return newArray;        
         }
 
         void resize(int NewSize) {

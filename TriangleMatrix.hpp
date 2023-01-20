@@ -152,29 +152,29 @@ class TriangleMatrix : public SquareMatrix<T> {
             return newTriangleMatrix;
         }
 
-    TriangleMatrix operator- (const TriangleMatrix B) {
-        auto newTriangleMatrix = new TriangleMatrix(*this);
-        if (newTriangleMatrix.rectangleMatrix->getSize() == B.rectangleMatrix->getSize()) {
-            for (int i = 0; i < newTriangleMatrix.rectangleMatrix->getSize(); ++i) {
-                newTriangleMatrix.rectangleMatrix->set(i, newTriangleMatrix.rectangleMatrix->get(i) - B.rectangleMatrix->get(i));
+        TriangleMatrix operator- (const TriangleMatrix B) {
+            auto newTriangleMatrix = new TriangleMatrix(*this);
+            if (newTriangleMatrix.rectangleMatrix->getSize() == B.rectangleMatrix->getSize()) {
+                for (int i = 0; i < newTriangleMatrix.rectangleMatrix->getSize(); ++i) {
+                    newTriangleMatrix.rectangleMatrix->set(i, newTriangleMatrix.rectangleMatrix->get(i) - B.rectangleMatrix->get(i));
+                }
             }
+            return newTriangleMatrix;
         }
-        return newTriangleMatrix;
-    }
 
-    TriangleMatrix& operator= (const TriangleMatrix B) {
-        delete this->rectangleMatrix;
-        this->rectangleMatrix = new DynamicArray<T>(*B.rectangleMatrix);
-        return (*this);
-    }
+        TriangleMatrix& operator= (const TriangleMatrix B) {
+            delete this->rectangleMatrix;
+            this->rectangleMatrix = new DynamicArray<T>(*B.rectangleMatrix);
+            return (*this);
+        }
 
-    friend std :: ostream& operator<< (std :: ostream& os, TriangleMatrix triangleMatrix) {
-        for (int i = 0; i < triangleMatrix.lines; ++i) {
-            for (int j = 0; j < triangleMatrix.columns; ++j) {
-                std :: cout << std :: setprecision(3) << triangleMatrix.get(i + 1, j + 1) << " ";
+        friend std :: ostream& operator<< (std :: ostream& os, TriangleMatrix triangleMatrix) {
+            for (int i = 0; i < triangleMatrix.lines; ++i) {
+                for (int j = 0; j < triangleMatrix.columns; ++j) {
+                    std :: cout << std :: setprecision(3) << triangleMatrix.get(i + 1, j + 1) << " ";
+                }
+                std :: cout << "\n";
             }
-            std :: cout << "\n";
+            return os;
         }
-        return os;
-    }
 };

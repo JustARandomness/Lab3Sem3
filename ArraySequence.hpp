@@ -120,11 +120,14 @@ class ArraySequence : public Sequence<T, Iterator> {
         }
 
         void prepend(T item) override {
-            this->items->resize(this->items->getSize() + 1);
-            for (int i = this->items->getSize() - 1; i > 0; --i) {
+            if (this->items->getCapacity() == this->items->getSize()) {
+                this->items->resize(this->items->getSize() + 1);
+            }
+            for (int i = this->items->getSize(); i > 0; --i) {
                 this->items->set(i, this->items->get(i - 1));
             }
             this->items->set(0, item);
+            this->items->setSize(this->items->getSize() + 1);
         }
 
         void insertAt(T item, int index) override {

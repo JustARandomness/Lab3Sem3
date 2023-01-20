@@ -53,11 +53,10 @@ class RectangleMatrix {
             return this->rectangleMatrix->get((lineSerialNumber - 1) * this->columns + (columnSerialNumber - 1));
         }
 
-
         T* getArrayCopy() const {
-            T *items = new T[this->rectangleMatrix->GetSize()];
-            for (int i = 0; i < this->rectangleMatrix->GetSize(); ++i) {
-                items[i] = this->rectangleMatrix->Get(i);
+            T *items = new T[this->rectangleMatrix->getSize()];
+            for (int i = 0; i < this->rectangleMatrix->getSize(); ++i) {
+                items[i] = this->rectangleMatrix->get(i);
             }
             return items;
         }
@@ -223,9 +222,5 @@ class RectangleMatrix {
                 std::cout << "\n";
             }
             return os;
-        }
-
-        DynamicArray<T> operator[] (int lineIndex) {
-            return DynamicArray<T>(*(this->rectangleMatrix), this->getColumnsCount() * lineIndex, this->getColumnsCount());;
         }
 };
