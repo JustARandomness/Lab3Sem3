@@ -217,9 +217,9 @@ class RectangleMatrix {
         friend std::ostream &operator<<(std::ostream &os, RectangleMatrix rectangleMatrix1) {
             for (int i = 0; i < rectangleMatrix1.lines; ++i) {
                 for (int j = 0; j < rectangleMatrix1.columns; ++j) {
-                    std::cout << std::setprecision(3) << rectangleMatrix1.get(i + 1, j + 1) << " ";
+                    os << std::setprecision(3) << rectangleMatrix1.get(i + 1, j + 1) << " ";
                 }
-                std::cout << "\n";
+                os << "\n";
             }
             return os;
         }

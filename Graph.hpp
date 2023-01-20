@@ -93,33 +93,33 @@ class Graph {
                     
         }
 
-        // friend std::ostream& operator<<(std::ostream& os, Graph<int> g) {
-        //     int size = g.getSize();
-        //     for (int i = 0; i < size; ++i) {
-        //         std::cout << i << " : ";
-        //         for (int j = 0; j < size; ++i) {
-        //             if (g.adjMatrix->get(i + 1, j + 1) != 0)
-        //                 std::cout << j << ", ";
-        //         }
-        //     }
-        //     return os;
-        // }
+        friend std::ostream& operator<<(std::ostream& os, Graph<T> g) {
+            int size = g.getSize();
+            for (int i = 0; i < size; ++i) {
+                os << i + 1 << " : { ";
+                for (int j = 0; j < size; ++j) {
+                    if (g.adjMatrix->get(i + 1, j + 1) != 0)
+                        os << j + 1 << ' ';
+                }
+                os << "};\n";
+            }
+            return os;
+        }
 };
 
+
+
 Graph<int>* CreateTestGraph() {
-    auto* graph = new Graph<int>(3);
-    // graph->changeEgde(3, 1, 5);
-    // graph->changeEgde(2, 2, 1);
-    // graph->changeEgde(8, 3, 1);
-    // graph->changeEgde(6, 3, 2);
-    // graph->changeEgde(5, 4, 2);
-    // graph->changeEgde(3, 6, 2);
-    // graph->changeEgde(4, 3, 4);
-    // graph->changeEgde(9, 3, 5);
-    // graph->changeEgde(2, 4, 6);
-    // graph->changeEgde(1, 6, 5);
-    graph->changeEgde(9, 1, 2);
-    graph->changeEgde(2, 2, 3);
-    graph->changeEgde(1, 3, 1);
+    auto* graph = new Graph<int>(6);
+    graph->changeEgde(3, 1, 5);
+    graph->changeEgde(2, 2, 1);
+    graph->changeEgde(8, 3, 1);
+    graph->changeEgde(6, 3, 2);
+    graph->changeEgde(5, 4, 2);
+    graph->changeEgde(3, 6, 2);
+    graph->changeEgde(4, 3, 4);
+    graph->changeEgde(9, 3, 5);
+    graph->changeEgde(2, 4, 6);
+    graph->changeEgde(1, 6, 5);
     return graph;
 };

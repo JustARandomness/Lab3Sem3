@@ -19,12 +19,7 @@
 
 int main() {
     auto* graph = CreateTestGraph();
-    std::cout << graph->getSize() << '\n';
-    ArraySequence<int>* seq = graph->topologicalSort();
-    for (auto i : (*seq)) {
-        std::cout << i << ' ';
-    }
-    delete seq;
+    std::cout << (*graph);
     delete graph;
     return 0;
 }
