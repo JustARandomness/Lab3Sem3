@@ -219,6 +219,7 @@ class DynamicArray {
         DynamicArray() {
             this->array = new T [1];
             this->capacity = 1;
+            this->size = 0;
         }
 
         explicit DynamicArray(int count) {

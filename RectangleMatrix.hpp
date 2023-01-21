@@ -21,7 +21,9 @@ class RectangleMatrix {
             }
         };
     public:
-        RectangleMatrix() = default;
+        RectangleMatrix() {
+            this->rectangleMatrix = new DynamicArray<T>();
+        };
 
         RectangleMatrix(T *items, int linesCount, int columnsCount) {
             this->lines = linesCount;
@@ -51,7 +53,6 @@ class RectangleMatrix {
         ~RectangleMatrix() {
             delete this->rectangleMatrix;
         }
-
     public:
         int getColumnsCount() {
             return this->columns;

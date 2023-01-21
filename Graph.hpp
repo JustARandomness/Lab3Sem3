@@ -1,9 +1,11 @@
+#include <queue>
+
 int max = 1000000000;
 
 template<class T>
 class Graph {
     private:
-        SquareMatrix<T>* adjMatrix = nullptr;
+        SquareMatrix<T> adjMatrix;
 
         enum ColourToInt {white, gray, black};
 
@@ -13,9 +15,8 @@ class Graph {
             }
             colour[v] = gray;
             int size = this->getSize();
-            for (int i = 0; i < size; ++i) 
-            {
-                if (i != v && this->adjMatrix->get(v, i) != 0) {
+            for (int i = 0; i < size; ++i) {
+                if (i != v && this->adjMatrix.get(v, i) != 0) {
                     if (isCyclic(i, colour)) {
                         return true;
                     }
@@ -25,38 +26,38 @@ class Graph {
             return false;
         }
 
-        void dfs(int v, ArraySequence<bool>* visited, ArraySequence<int>* stack) {
-            (*visited)[v] = true;
+        void dfs(int v, ArraySequence<bool>& visited, ArraySequence<int>& stack) {
+            visited[v] = true;
             int size = this->getSize();
             for (int i = 0; i < size; ++i) {
-                if (!(*visited)[i] && this->adjMatrix->get(v, i) != 0) {
+                if (!visited[i] && this->adjMatrix.get(v, i) != 0) {
                     dfs(i, visited, stack);
                 }
             }
-            stack->prepend(v + 1);    
+            stack.prepend(v);    
         }
 
-        ArraySequence<T>* dijkstra(int v, ArraySequence<int>& parent) {
-            auto* distance = new ArraySequence<T>(max, this->getSize());
+        ArraySequence<T> dijkstra(int v, ArraySequence<int>& parent) {
+            ArraySequence<T> distance(max, this->getSize());
             ArraySequence<bool> visited(false, this->getSize());
-            (*distance)[v] = 0;
+            distance[v] = 0;
             for (int i = 0; i < this->getSize(); ++i) {
                 int s = -1;
                 for (int j = 0; j < this->getSize(); ++j) {
-                    if (!visited[j] && (s == -1 || (*distance)[j] < (*distance)[s])) {
+                    if (!visited[j] && (s == -1 || distance[j] < distance[s])) {
                         s = j;
                     }
                 }
-                if ((*distance)[s] == max) {
+                if (distance[s] == max) {
                     break;
                 }
                 visited[s] = true;
                 for (int j = 0; j < this->getSize(); ++j) {
-                    if (this->adjMatrix->get(s, j) != 0) {
+                    if (this->adjMatrix.get(s, j) != 0) {
                         int to = j;
-                        int len = this->adjMatrix->get(s, j);
-                        if ((*distance)[s] + len < (*distance)[to]) {
-                            (*distance)[to] = (*distance)[s] + len;
+                        int len = this->adjMatrix.get(s, j);
+                        if (distance[s] + len < distance[to]) {
+                            distance[to] = distance[s] + len;
                             parent[to] = s;
                         }
                     }
@@ -66,24 +67,32 @@ class Graph {
         }
     public:
         Graph(int num_of_columns = 6) {
-            this->adjMatrix = new SquareMatrix<T>(num_of_columns);
+            this->adjMatrix = SquareMatrix<T>(num_of_columns);
         }
 
-        ~Graph() {
-            delete adjMatrix;
-        };
+        ~Graph() = default;
     public:
         void flipEdge(int v1, int v2) {
             if (v1 == v2)
                 throw ErrorInfo(IndexOutOfRangeMsg, IndexOutOfRangeCode);
-            this->adjMatrix.set(getWeight(), v2, v1);
+            this->adjMatrix.set(this->getWeight(), v2, v1);
             this->adjMatrix.set(0, v1, v2);
         }
+
+        // ArraySequence<int> bfs(int v) {
+        //     std::queue<int> q;
+        //     q.push(v);
+        //     while (!q.empty()) {
+        //         int s = q.front();
+        //         q.pop()
+        //         for (int i = 0; i < this->adjMatrix())
+        //     }
+        // }
 
         void changeEgde(T weight, int v1, int v2) {
             if (v1 == v2)
                 throw ErrorInfo(IndexOutOfRangeCode, IndexOutOfRangeMsg);
-            this->adjMatrix->set(weight, v1, v2);    
+            this->adjMatrix.set(weight, v1, v2);    
         }
 
         void printGraph() {
@@ -91,15 +100,15 @@ class Graph {
         }
 
         size_t getSize() {
-            return this->adjMatrix->getSize();
+            return this->adjMatrix.getSize();
         }
 
         T getWeight(int v1, int v2) {
-            return this->adjMatrix->get(v1, v2);
+            return this->adjMatrix.get(v1, v2);
         }
 
         bool isCyclic() {
-            auto colour = ArraySequence<ColourToInt>(white, this->getSize());
+            ArraySequence<ColourToInt> colour(white, this->getSize());
             for (int i = 0; i < this->getSize(); ++i) {
                 if (isCyclic(i, colour)) {
                     return true;
@@ -108,21 +117,19 @@ class Graph {
             return false;
         }
 
-        ArraySequence<int>* getPath(int v1, int v2) {
+        ArraySequence<int> getPath(int v1, int v2) {
             ArraySequence<int> parent(-1, this->getSize());
-            auto* path = new ArraySequence<int>(0);
-            auto* distance = dijkstra(v1, parent);
-            if ((*distance)[v2] != max) {
+            ArraySequence<int> path(0);
+            ArraySequence<T> distance = dijkstra(v1, parent);
+            if (distance[v2] != max) {
                 for (int v = v2; v != v1; v = parent[v]) {
-                    path->prepend(v);
+                    path.prepend(v);
                 }
-                path->prepend(v1);
+                path.prepend(v1);
                 return path;
             }
-            delete distance;
-            delete path;
             std::cout << "No path found\n";
-            return nullptr;
+            return path;
         }
 
         ArraySequence<T> fordBellman (int v) {
@@ -132,24 +139,24 @@ class Graph {
                 for (int i = 0; i < this->getSize(); ++i) {
                     bool anyChange = false;
                     for (int j = 0; j < this->getSize(); ++j) {
-                        if ((*this->adjMatrix)[i][j] != 0) {
+                        if (this->adjMatrix[i][j] != 0) {
                             if (distance[i] < max) {
-                                if (distance[j] > distance[i] + (*this->adjMatrix)[i][j]) {
-                                    distance[j] = distance[i] + (*this->adjMatrix)[i][j];
+                                if (distance[j] > distance[i] + this->adjMatrix[i][j]) {
+                                    distance[j] = distance[i] + this->adjMatrix[i][j];
                                 }
                             }
                         }
                     }
                 }
             }
-            for (int i = 0 ; i <this->getSize(); ++i) {
+            for (int i = 0 ; i < this->getSize(); ++i) {
                 distance[i] = (distance[i] == max) ? -1 : distance[i];
             }
             return distance;
         }
 
         SquareMatrix<T> floyd() {
-            SquareMatrix<T> distance(*(this->adjMatrix));
+            SquareMatrix<T> distance(this->adjMatrix);
             for (int i = 0; i < this->getSize(); ++i) {
                 for (int j = 0; j < this->getSize(); ++j) {
                     if (i != j) {
@@ -172,18 +179,17 @@ class Graph {
             return distance;
         }
 
-        ArraySequence<T>* topologicalSort() {
+        ArraySequence<T> topologicalSort() {
+            ArraySequence<int> stack(0);
             if (!this->isCyclic()) {
-                auto* visited = new ArraySequence<bool>(false, this->getSize());
-                auto* stack = new ArraySequence<int>(0);
+                ArraySequence<bool> visited(false, this->getSize());
                 for (int i = 0; i < this->getSize(); ++i) {
-                    if (!((*visited)[i]))
+                    if (!(visited[i])) {
                         dfs (i, visited, stack);
+                    }
                 }
-                delete visited;
-                return stack;
             }
-            return nullptr;
+            return stack;
         }
 
         friend std::ostream& operator<<(std::ostream& os, Graph<T>& g) {
@@ -191,7 +197,7 @@ class Graph {
             for (int i = 0; i < size; ++i) {
                 os << i << " : { ";
                 for (int j = 0; j < size; ++j) {
-                    if (g.adjMatrix->get(i, j) != 0)
+                    if (g.adjMatrix.get(i, j) != 0)
                         os << j << ' ';
                 }
                 os << "};\n";
@@ -203,7 +209,7 @@ class Graph {
 
 
 Graph<int> CreateTestGraph() {
-    auto graph = Graph<int>(6);
+    Graph<int> graph(8);
     graph.changeEgde(3, 0, 4);
     graph.changeEgde(2, 1, 0);
     graph.changeEgde(8, 2, 0);
@@ -214,5 +220,64 @@ Graph<int> CreateTestGraph() {
     graph.changeEgde(9, 2, 4);
     graph.changeEgde(2, 3, 5);
     graph.changeEgde(1, 5, 4);
+    graph.changeEgde(7, 5, 6);
+    graph.changeEgde(3, 6, 7);
+    graph.changeEgde(4, 7, 4);
     return graph;
 };
+
+void Test() {
+    Graph<int> graph = CreateTestGraph();
+    auto topSort = graph.topologicalSort();
+    int topSortRight[8] = {2, 3, 5, 6, 7, 1, 0, 4};
+    bool works = true;
+    for (int i = 0; i < graph.getSize(); ++i) {
+        if (topSort[i] != topSortRight[i]) {
+            works = false;
+        }
+    }
+    if (works) {
+        std::cout << "Topological sort working properly\n\n";
+    }
+    else {
+        std::cout << "Topological sort doesn't work properly\n\n";
+    }
+    works = true;
+    auto bellman2 = graph.fordBellman(2);
+    if (bellman2[0] != 8 || bellman2[1] != 6 || bellman2[2] != 0 || bellman2[3] != 4 || bellman2[4] != 7 || bellman2[5] != 6 || bellman2[6] != 13 || bellman2[7] != 16) {
+        works = false;
+    }
+    if (works) {
+        std::cout << "Bellman algorythm working properly\n\n";
+    }
+    else {
+        std::cout << "Bellman algorythm doesn't work properly\n\n";
+    }
+    works = true;
+    auto dijkstra = graph.getPath(2, 4);
+    int path[4] = {2, 3, 5, 4};
+    for (int i = 0; i < dijkstra.getLength(); ++i) {
+        if (dijkstra[i] != path[i]) {
+            works = false;
+        }
+    }
+    if (works) {
+        std::cout << "Dijkstra algorythm working properly\n\n";
+    }
+    else {
+        std::cout << "Dijkstra algorythm doesn't work properly\n\n";
+    }
+    works = true;
+    auto floyd_line = graph.floyd().getLine(2);
+    for (int i = 0; i < graph.getSize(); ++i) {
+        if (floyd_line[0][i] != bellman2[i]) {
+            works = false;
+        }
+    }
+    if (works) {
+        std::cout << "Floyd algorythm working properly\n\n";
+    }
+    else {
+        std::cout << "Floyd algorythm doesn't work properly\n\n";
+    }
+}

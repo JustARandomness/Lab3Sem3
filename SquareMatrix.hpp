@@ -7,9 +7,7 @@ class SquareMatrix : public RectangleMatrix<T>{
     protected:
         size_t size = 0;
     public:
-        SquareMatrix() = default;
-
-        explicit SquareMatrix(int count) {
+        explicit SquareMatrix(int count = 0) {
             T item;
             item = 0;
             this->lines = count;
@@ -98,10 +96,13 @@ class SquareMatrix : public RectangleMatrix<T>{
                 }
             }
             else {
-                delete this->rectangleMatrix;
-                this->rectangleMatrix = new DynamicArray<T>(*B.rectangleMatrix);
+                if (this->rectangleMatrix->getSize() != 0){
+                    delete this->rectangleMatrix;
+                }
+                this->rectangleMatrix = new DynamicArray<T>(*(B.rectangleMatrix));
                 this->lines = B.lines;
                 this->columns = B.columns;
+                this->size = B.size;
             }
             return *this;
         };

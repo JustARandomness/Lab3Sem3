@@ -25,8 +25,8 @@ class ArraySequence : public Sequence<T, Iterator> {
             this->items = newArray;
         }
 
-        explicit ArraySequence(ArraySequence<T, Iterator> *sequence) {
-            auto *newArray = new DynamicArray<T>(sequence->items, sequence->getLength());
+        ArraySequence(const ArraySequence<T>& sequence) {
+            auto *newArray = new DynamicArray<T>(*sequence.items);
             this->items = newArray;
         }
 
