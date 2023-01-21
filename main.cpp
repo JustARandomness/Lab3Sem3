@@ -18,6 +18,13 @@
 
 int main() {
     auto graph = CreateTestGraph();
-    std::cout << graph.fordBellman(1) << '\n';
+    std::cout << graph;
+    std::cout << "Topological sort:\n" << (*graph.topologicalSort()) << "\n\n";
+    std::cout << "Ford Bellman:\n";
+    for (int i = 0; i < graph.getSize(); ++i) {
+        std::cout << graph.fordBellman(i);
+    }
+    std::cout << '\n' << (*graph.getPath(1, 4)) << "\n\n";
+    std::cout << graph.floyd();
     return 0;
 }
