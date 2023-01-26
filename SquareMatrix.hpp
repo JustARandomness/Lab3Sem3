@@ -1,0 +1,145 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+
+template <class T>
+class SquareMatrix : public RectangleMatrix<T>{
+    protected:
+        size_t size = 0;
+    public:
+        explicit SquareMatrix(int count = 0) {
+            T item;
+            item = 0;
+            this->lines = count;
+            this->columns = count;
+            this->size = count;
+            this->rectangleMatrix = new DynamicArray<T>(count * count);
+            for (int i = 0; i < count * count; ++i) {
+                this->rectangleMatrix->set(i, item);
+            }
+            this->rectangleMatrix->setSize(count * count);
+        }
+
+        SquareMatrix(T* items, int count) {
+            this->lines = count;
+            this->columns = count;;
+            this->rectangleMatrix = new DynamicArray<T>(items, count * count);
+            for (int i = 0; i < count * count; ++i) {
+                this->rectangleMatrix->set(i, items[i]);
+            }
+        }
+
+        SquareMatrix(const SquareMatrix& matrix) {
+            this->lines = matrix.lines;
+            this->columns = matrix.columns;
+            this->size = matrix.size;
+            this->rectangleMatrix = new DynamicArray<T>(*matrix.rectangleMatrix);
+        }
+    public:
+        int getSize() {
+            return this->size;
+        }
+    public:
+        SquareMatrix<T> operator+ (SquareMatrix<T> B) {
+            if (this->lines == B.lines && this->columns == B.columns) {
+                SquareMatrix<T> resultMatrix(*this);
+                for (int i = 0; i < resultMatrix.size; ++i) {
+                    for (int j = 0; j < resultMatrix.size; ++j) {
+                        resultMatrix.set(i, j, this->get(i, j) + B.get(i, j));
+                    }
+                }
+                return resultMatrix;
+            }
+            else {
+                throw ErrorInfo(DifferentSizedMatricesCode, DifferentSizedMatricesMsg);
+            }
+        };
+
+        SquareMatrix<T> operator- (const SquareMatrix<T> B) {
+            if (this->lines == B.lines && this->columns == B.columns) {
+                SquareMatrix<T> resultMatrix(*this);
+                for (int i = 0; i < resultMatrix.size; ++i) {
+                    for (int j = 0; j < resultMatrix.size; ++j) {
+                        resultMatrix.set(i, j, this->get(i, j) - B.get(i, j));
+                    }
+                }
+                return resultMatrix;
+            }
+            else {
+                throw ErrorInfo(DifferentSizedMatricesCode, DifferentSizedMatricesMsg);
+            }
+        };
+
+        SquareMatrix<T> operator* (SquareMatrix<T> B) {
+            if (this->size == B.lines && this->size == B.columns) {
+                SquareMatrix<T> resultMatrix(this->size);
+                for (int i = 0; i < resultMatrix.size; ++i) {
+                    for (int j = 0; j < resultMatrix.size; ++j) {
+                        for (int l = 0; l < this->size; ++l) {
+                            resultMatrix.set(i, j, resultMatrix.get(i, j) + (B.get(l, j) * this->get(i, l)));
+                        }
+                    }
+                }
+                return resultMatrix;
+            }
+            else {
+                throw ErrorInfo(DifferentSizedMatricesCode, DifferentSizedMatricesMsg);
+            }
+        };
+
+        SquareMatrix<T>& operator= (SquareMatrix<T> B) {
+            if (this->lines == B.lines) {
+                for (int i = 0; i < this->lines; ++i) {
+                    for (int j = 0; j < this->columns; ++j) {
+                        this->set(B.get(i, j), i, j);
+                    }
+                }
+            }
+            else {
+                if (this->rectangleMatrix->getSize() != 0){
+                    delete this->rectangleMatrix;
+                }
+                this->rectangleMatrix = new DynamicArray<T>(*(B.rectangleMatrix));
+                this->lines = B.lines;
+                this->columns = B.columns;
+                this->size = B.size;
+            }
+            return *this;
+        };
+
+        SquareMatrix<T>& operator= (RectangleMatrix<T> B) {
+            if (!B.isSquareMatrix()) {
+                throw ErrorInfo(NotSquareMatrixCode, NotSquareMatrixMsg);
+            }
+            else if (B.isSquareMatrix() && this->lines == B.getLinesCount()) {
+                for (int i = 0; i < this->lines; ++i) {
+                    for (int j = 0; j < this->columns; ++j) {
+                        this->set(B.get(i, j), i, j);
+                    }
+                }
+                return *this;
+            }
+            else {
+                delete this->rectangleMatrix;
+                this->rectangleMatrix = new DynamicArray<T>(B.getArrayCopy(), B.getLinesCount() * B.getColumnsCount());
+                this->lines = B.getLinesCount();
+                this->columns = B.getColumnsCount();
+                for (int i = 0; i < this->lines; ++i) {
+                    for (int j = 0; j < this->columns; ++j) {
+                        this->set(B.get(i, j), i, j);
+                    }
+                }
+                return *this;
+            }
+        };
+
+        friend std :: ostream& operator<< (std :: ostream& os, SquareMatrix squareMatrix) {
+            for (int i = 0; i < squareMatrix.lines; ++i) {
+                for (int j = 0; j < squareMatrix.columns; ++j) {
+                    std :: cout << std :: setprecision(3) << squareMatrix.get(i, j) << " ";
+                }
+                std :: cout << "\n";
+            }
+            return os;
+        }
+};
